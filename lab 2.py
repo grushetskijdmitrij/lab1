@@ -48,3 +48,11 @@ print(y_pred[:5])
 
 print("\nРеальные значения:")
 print(Y_test[:5])
+
+mae = mean_absolute_error(Y_test,y_pred)
+mse = mean_squared_error(Y_test, y_pred)
+r2 = r2_score(Y_test, y_pred)
+
+print("MAE:",mae)
+print("MSE:",mse)
+print("R2",r2)
