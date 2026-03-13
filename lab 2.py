@@ -56,3 +56,21 @@ r2 = r2_score(Y_test, y_pred)
 print("MAE:",mae)
 print("MSE:",mse)
 print("R2",r2)
+
+df['top_team'] = (df['rank'] <= 50).astype(int)
+
+print(df[['rank','top_team']].head(10))
+
+X_class = df[['previous_points','previous_rank','points']]
+
+Y_class = df['top_team']
+
+X_train_c,X_test_c,Y_train_c,Y_test_c = train_test_split(
+    X_class, Y_class,
+    test_size=0.2,
+    random_state=42
+)
+
+log_model = LogisticRegression()
+#также обучение
+log_model.fit(X_train_c,Y_train_c)
