@@ -37,3 +37,5 @@ df = pd.get_dummies(df,columns=['team','team_code','association'], drop_first=Tr
 
 print('Данные после преобразования:')
 print(df.head())
+
+df.to_csv("processed_fifa_ranking.csv", index=False)
