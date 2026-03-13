@@ -40,3 +40,11 @@ print("\nТестовая выборка", X_test.shape)
 model = LinearRegression()
 #после этой функции модель обучена
 model.fit(X_train,Y_train)
+
+y_pred = model.predict(X_test)
+
+print("\nПредсказанные значения:")
+print(y_pred[:5])
+
+print("\nРеальные значения:")
+print(Y_test[:5])
