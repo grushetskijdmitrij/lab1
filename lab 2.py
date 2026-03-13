@@ -27,3 +27,12 @@ print(X.head())
 
 print("\nY:")
 print(Y.head())
+
+X_train, X_test, Y_train, Y_test = train_test_split(
+    X,Y,
+    test_size=0.2,
+    random_state=42
+)
+
+print("\nОбучающая выборка:",X_train.shape)
+print("\nТестовая выборка", X_test.shape)
