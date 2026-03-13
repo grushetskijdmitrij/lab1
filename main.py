@@ -1,4 +1,5 @@
 import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
 
 df = pd.read_csv("fifa_ranking_2022-10-06.csv")
 
@@ -22,3 +23,14 @@ df['association'].fillna(df['association'].mode()[0], inplace=True)
 
 print("\nПропущенные значения после заполнения:")
 print(df.isnull().sum())
+
+print("\nНормализация числовых данных")
+
+scaler = MinMaxScaler()
+
+numeric_columns = ['rank','previous_rank','points','previous_points']
+
+df[numeric_columns] = scaler.fit_transform(df[numeric_columns])
+
+print("\nДанные после нормализации:")
+print(df.head())
