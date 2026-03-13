@@ -24,8 +24,6 @@ df['association'].fillna(df['association'].mode()[0], inplace=True)
 print("\nПропущенные значения после заполнения:")
 print(df.isnull().sum())
 
-print("\nНормализация числовых данных")
-
 scaler = MinMaxScaler()
 
 numeric_columns = ['rank','previous_rank','points','previous_points']
@@ -33,4 +31,9 @@ numeric_columns = ['rank','previous_rank','points','previous_points']
 df[numeric_columns] = scaler.fit_transform(df[numeric_columns])
 
 print("\nДанные после нормализации:")
+print(df.head())
+
+df = pd.get_dummies(df,columns=['team','team_code','association'], drop_first=True)
+
+print('Данные после преобразования:')
 print(df.head())
