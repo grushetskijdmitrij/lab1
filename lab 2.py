@@ -74,3 +74,16 @@ X_train_c,X_test_c,Y_train_c,Y_test_c = train_test_split(
 log_model = LogisticRegression()
 #также обучение
 log_model.fit(X_train_c,Y_train_c)
+
+Y_pred_class = log_model.predict(X_test_c)
+
+print("\nПредсказанные классы:")
+print(Y_pred_class[:10])
+
+accuracy = accuracy_score(Y_test_c,Y_pred_class)
+print("\nТочночть:",accuracy)
+
+matrix = confusion_matrix(Y_test_c,Y_pred_class)
+
+print("\nМатрица ошибок:")
+print(matrix)
