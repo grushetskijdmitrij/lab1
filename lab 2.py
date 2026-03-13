@@ -11,3 +11,19 @@ from sklearn.metrics import r2_score
 
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
+
+df = pd.read_csv("fifa_ranking_2022-10-06.csv")
+
+print("Первые строки датасета:")
+print(df.head())
+print(df.info())
+
+X = df[['previous_points','previous_rank']]
+
+Y = df['points']
+
+print("\nX:")
+print(X.head())
+
+print("\nY:")
+print(Y.head())
