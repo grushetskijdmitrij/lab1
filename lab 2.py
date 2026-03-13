@@ -36,3 +36,7 @@ X_train, X_test, Y_train, Y_test = train_test_split(
 
 print("\nОбучающая выборка:",X_train.shape)
 print("\nТестовая выборка", X_test.shape)
+
+model = LinearRegression()
+#после этой функции модель обучена
+model.fit(X_train,Y_train)
