@@ -1,89 +1,68 @@
 import pandas as pd
-import numpy as np
-
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler, PolynomialFeatures
+from sklearn.linear_model import LinearRegression, LogisticRegression
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score, accuracy_score, confusion_matrix
 
-from sklearn.metrics import mean_absolute_error
-from sklearn.metrics import mean_squared_error
-from sklearn.metrics import r2_score
+df = pd.read_csv("processed_companies.csv")
 
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import confusion_matrix
+print("Размер датасета:", df.shape)
 
-df = pd.read_csv("fifa_ranking_2022-10-06.csv")
+target = 'fiftyDayAverageChangePercent'
 
-print("Первые строки датасета:")
-print(df.head())
-print(df.info())
+X = df.drop(columns=[target, 'symbol'])
+y = df[target]
 
-X = df[['previous_points','previous_rank']]
-
-Y = df['points']
-
-print("\nX:")
-print(X.head())
-
-print("\nY:")
-print(Y.head())
-
-X_train, X_test, Y_train, Y_test = train_test_split(
-    X,Y,
-    test_size=0.2,
-    random_state=42
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
 )
 
-print("\nОбучающая выборка:",X_train.shape)
-print("\nТестовая выборка", X_test.shape)
+scaler = StandardScaler()
+
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+poly = PolynomialFeatures(degree=2)
+
+X_train = poly.fit_transform(X_train)
+X_test = poly.transform(X_test)
 
 model = LinearRegression()
-#после этой функции модель обучена
-model.fit(X_train,Y_train)
+model.fit(X_train, y_train)
 
 y_pred = model.predict(X_test)
 
-print("\nПредсказанные значения:")
-print(y_pred[:5])
+print("Реальные:", y_test.values[:10])
+print("Предсказанные:", y_pred[:10])
 
-print("\nРеальные значения:")
-print(Y_test[:5])
+print("MSE:", mean_squared_error(y_test, y_pred))
+print("MAE:", mean_absolute_error(y_test, y_pred))
+print("R2:", r2_score(y_test, y_pred))
 
-mae = mean_absolute_error(Y_test,y_pred)
-mse = mean_squared_error(Y_test, y_pred)
-r2 = r2_score(Y_test, y_pred)
+median_value = df['fiftyDayAverageChangePercent'].median()
 
-print("MAE:",mae)
-print("MSE:",mse)
-print("R2",r2)
+df['target_class'] = (df['fiftyDayAverageChangePercent'] > median_value).astype(int)
 
-df['top_team'] = (df['rank'] <= 50).astype(int)
+X = df.drop(columns=['target_class', 'symbol'])
+y = df['target_class']
 
-print(df[['rank','top_team']].head(10))
-
-X_class = df[['previous_points','previous_rank','points']]
-
-Y_class = df['top_team']
-
-X_train_c,X_test_c,Y_train_c,Y_test_c = train_test_split(
-    X_class, Y_class,
-    test_size=0.2,
-    random_state=42
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
 )
 
-log_model = LogisticRegression()
-#также обучение
-log_model.fit(X_train_c,Y_train_c)
+scaler = StandardScaler()
 
-Y_pred_class = log_model.predict(X_test_c)
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
 
-print("\nПредсказанные классы:")
-print(Y_pred_class[:10])
+model = LogisticRegression(max_iter=2000)
+model.fit(X_train, y_train)
 
-accuracy = accuracy_score(Y_test_c,Y_pred_class)
-print("\nТочночть:",accuracy)
+y_pred = model.predict(X_test)
 
-matrix = confusion_matrix(Y_test_c,Y_pred_class)
+print("Реальные:", y_test.values[:10])
+print("Предсказанные:", y_pred[:10])
 
-print("\nМатрица ошибок:")
-print(matrix)
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print("Confusion Matrix:")
+print(confusion_matrix(y_test, y_pred))

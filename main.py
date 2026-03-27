@@ -1,41 +1,65 @@
 import pandas as pd
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 
-df = pd.read_csv("fifa_ranking_2022-10-06.csv")
+df = pd.read_csv("01_company_info.csv")
 
+print("Первые строки исходного датасета:")
 print(df.head())
 
+print("\nИнформация о датасете:")
 print(df.info())
 
-print("\nКоличество пропущенных значений в каждом столбце:")
+numeric_features = [
+    'fiftyDayAverageChange',
+    'fiftyDayAverageChangePercent',
+    'twoHundredDayAverageChange',
+    'twoHundredDayAverageChangePercent',
+    'priceEpsCurrentYear',
+    'trailingPegRatio'
+]
 
-missing_values = df.isnull().sum()
-print(missing_values)
+categorical_features = [
+    'country',
+    'sector'
+]
 
-df['rank'].fillna(df['rank'].mean(), inplace=True)
-df['previous_rank'].fillna(df['previous_rank'].mean(), inplace=True)
-df['points'].fillna(df['points'].mean(), inplace=True)
-df['previous_points'].fillna(df['previous_points'].mean(), inplace=True)
+id_features = [
+    'symbol'
+]
 
-df['team'].fillna(df['team'].mode()[0], inplace=True)
-df['team_code'].fillna(df['team_code'].mode()[0], inplace=True)
-df['association'].fillna(df['association'].mode()[0], inplace=True)
+selected_columns = numeric_features + categorical_features + id_features
 
-print("\nПропущенные значения после заполнения:")
+df = df[selected_columns]
+
+print("\nПосле выбора столбцов:")
+print(df.head())
+
+print("\nПропуски:")
 print(df.isnull().sum())
 
+for col in numeric_features:
+    df[col] = df[col].fillna(df[col].median())
+
+for col in categorical_features:
+    df[col] = df[col].fillna("Unknown")
+
+print("\nПосле обработки пропусков:")
+print(df.isnull().sum())
+
+
 scaler = MinMaxScaler()
+df[numeric_features] = scaler.fit_transform(df[numeric_features])
 
-numeric_columns = ['rank','previous_rank','points','previous_points']
+le_country = LabelEncoder()
+le_sector = LabelEncoder()
 
-df[numeric_columns] = scaler.fit_transform(df[numeric_columns])
+df['country'] = le_country.fit_transform(df['country'])
+df['sector'] = le_sector.fit_transform(df['sector'])
 
-print("\nДанные после нормализации:")
+print(dict(enumerate(le_country.classes_)))
+
+print(dict(enumerate(le_sector.classes_)))
+
 print(df.head())
 
-df = pd.get_dummies(df,columns=['team','team_code','association'], drop_first=True)
-
-print('Данные после преобразования:')
-print(df.head())
-
-df.to_csv("processed_fifa_ranking.csv", index=False)
+df.to_csv("processed_companies.csv", index=False)
